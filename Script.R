@@ -13,8 +13,9 @@ codebook <- read_excel("data/codebook.xlsx",
                        col_types = c("text", "skip", "text"))
 
 
-# remove redundant columns
-test <- test %>% select(-c(tamhog, Id))
-train <- train %>% select(-c(tamhog, Id))
+# rename columns and remove redundant features
+colnames(test)[colnames(test) == codebook$`Variable name`] <- codebook$`English Variable Name`
+colnames(train)[colnames(train) == codebook$`Variable name`] <- codebook$`English Variable Name`
 
-colnames(test)[which(names(test) == codebook$`Variable name`)] <- codebook$`English Variable Name`
+test <- test %>% select(-c(tamhog, school_yrs_sqr, age_sqr, Age_sqr, hh_total_sqr, ed_head_m_sqr, hh_children_sqr, overcrowding_sqr, dependency_sqr, meaneduc_sqr))
+train <- train %>% select(-c(tamhog, school_yrs_sqr, age_sqr, Age_sqr, hh_total_sqr, ed_head_m_sqr, hh_children_sqr, overcrowding_sqr, dependency_sqr, meaneduc_sqr))
