@@ -13,7 +13,7 @@ codebook <- read_excel("data/codebook.xlsx",
                        col_types = c("text", "skip", "text"))
 
 
-# rename columns and remove redundant features
+# rename columns and remove unnecessary features
 colnames(test)[colnames(test) == codebook$`Variable name`] <- codebook$`English Variable Name`
 colnames(train)[colnames(train) == codebook$`Variable name`] <- codebook$`English Variable Name`
 
