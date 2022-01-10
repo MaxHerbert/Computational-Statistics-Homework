@@ -24,5 +24,5 @@ train <- train %>% select(-c(tamhog, school_yrs_sqr, age_sqr, Age_sqr, hh_total_
 na_test <- colSums(is.na(test))
 na_train <- colSums(is.na(train))
 
-na_test <- na_test[na_test > 0]
-na_train <- na_train[na_train > 0]
+na_test_perc <- na_test[na_test > 0] / nrow(test) * 100
+na_train_perc <- na_train[na_train > 0] / nrow(train) * 100
