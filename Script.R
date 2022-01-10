@@ -19,3 +19,10 @@ colnames(train)[colnames(train) == codebook$`Variable name`] <- codebook$`Englis
 
 test <- test %>% select(-c(tamhog, school_yrs_sqr, age_sqr, Age_sqr, hh_total_sqr, ed_head_m_sqr, hh_children_sqr, overcrowding_sqr, dependency_sqr, meaneduc_sqr))
 train <- train %>% select(-c(tamhog, school_yrs_sqr, age_sqr, Age_sqr, hh_total_sqr, ed_head_m_sqr, hh_children_sqr, overcrowding_sqr, dependency_sqr, meaneduc_sqr))
+
+# find columns with missing values
+na_test <- colSums(is.na(test))
+na_train <- colSums(is.na(train))
+
+na_test <- na_test[na_test > 0]
+na_train <- na_train[na_train > 0]
