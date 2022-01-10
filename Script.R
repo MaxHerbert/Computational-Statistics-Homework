@@ -46,6 +46,12 @@ train <- train %>% mutate(region = if_else(region1 == 1, "Central",
                                                                  if_else(region5 == 1, "Huetar Atlantica",
                                                                          if_else(region6 == 1, "Huetar Norte", "")))))))
 
+test <- test %>% mutate(area = if_else(area1 == 1, "urban",
+                                       if_else(area2 == 1, "rural", "")))
+
+train <- train %>% mutate(area = if_else(area1 == 1, "urban",
+                                       if_else(area2 == 1, "rural", "")))
+
 
 df_master <- train %>% select(-target) 
 df_master <- rbind(df_master, test)
