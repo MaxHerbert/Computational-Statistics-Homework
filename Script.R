@@ -26,3 +26,8 @@ na_train <- colSums(is.na(train))
 
 na_test_perc <- na_test[na_test > 0] / nrow(test) * 100
 na_train_perc <- na_train[na_train > 0] / nrow(train) * 100
+
+# remove columns with too many missings and drop any observations for which meaneduc is missing
+test <- test %>% select(-c(no_tablets, school_yrs_behind)) %>% drop_na(meaneduc)
+train <- train %>% select(-c(no_tablets, school_yrs_behind)) %>% drop_na(meaneduc)
+
