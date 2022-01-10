@@ -31,3 +31,5 @@ na_train_perc <- na_train[na_train > 0] / nrow(train) * 100
 test <- test %>% select(-c(no_tablets, school_yrs_behind)) %>% drop_na(meaneduc)
 train <- train %>% select(-c(no_tablets, school_yrs_behind)) %>% drop_na(meaneduc)
 
+df_master <- train %>% select(-target) 
+df_master <- rbind(df_master, test)
