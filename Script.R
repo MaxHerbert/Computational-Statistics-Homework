@@ -31,5 +31,22 @@ na_train_perc <- na_train[na_train > 0] / nrow(train) * 100
 test <- test %>% select(-c(no_tablets, school_yrs_behind)) %>% drop_na(meaneduc)
 train <- train %>% select(-c(no_tablets, school_yrs_behind)) %>% drop_na(meaneduc)
 
+# create new columns including regions and areas
+test <- test %>% mutate(region = if_else(region1 == 1, "Central", 
+                                         if_else(region2 == 1, "Chorotega",
+                                                 if_else(region3 == 1, "Pacifico central",
+                                                         if_else(region4 == 1, "Brunca",
+                                                                 if_else(region5 == 1, "Huetar Atlantica",
+                                                                         if_else(region6 == 1, "Huetar Norte", "")))))))
+
+train <- train %>% mutate(region = if_else(region1 == 1, "Central", 
+                                         if_else(region2 == 1, "Chorotega",
+                                                 if_else(region3 == 1, "Pacifico central",
+                                                         if_else(region4 == 1, "Brunca",
+                                                                 if_else(region5 == 1, "Huetar Atlantica",
+                                                                         if_else(region6 == 1, "Huetar Norte", "")))))))
+
+
 df_master <- train %>% select(-target) 
 df_master <- rbind(df_master, test)
+
