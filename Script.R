@@ -52,7 +52,10 @@ test <- test %>% mutate(area = if_else(area1 == 1, "urban",
 train <- train %>% mutate(area = if_else(area1 == 1, "urban",
                                        if_else(area2 == 1, "rural", "")))
 
-
+# bind test and training data into one dataframe
 df_master <- train %>% select(-target) 
 df_master <- rbind(df_master, test)
 
+# calculate average rent payment based on region and area
+avg_rent <- df_master %>% group_by(region, area) %>%
+  summarize(mean_rent = round(mean(rent, na.rm = TRUE)))
