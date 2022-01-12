@@ -1,14 +1,16 @@
 # import necessary packages
 library(tidyverse)
 library(readxl)
-
+library(randomForest)
 
 # set working directory relative to path of the script file
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # import training and test data
 test <- read_csv("data/test.csv")
-train <- read_csv("data/train.csv")
+
+train <- read_csv("data/train.csv", col_types = cols(Target = col_factor(levels = c("0", "1", "2", "3", "4"))))
+
 codebook <- read_excel("data/codebook.xlsx", 
                        col_types = c("text", "skip", "text"))
 
@@ -87,3 +89,10 @@ train <- train %>% mutate(rent = if_else(region == "Central" & area == "urban" &
                                                                                                        if_else(region == "Huetar Atlantica" & area == "rural" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Huetar Atlantica" & avg_rent$area == "rural")],
                                                                                                                if_else(region == "Huetar Norte" & area == "urban" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Huetar Norte" & avg_rent$area == "urban")],
                                                                                                                        if_else(region == "Huetar Norte" & area == "rural" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Huetar Norte" & avg_rent$area == "rural")], rent)))))))))))))
+
+
+# create RF
+
+train_final <- train %>% select(-c(Id, hh_id, area, region))
+
+rf <- randomForest(x = train_final, y = train$target, do.trace = TRUE, ntree = 100) # error message
