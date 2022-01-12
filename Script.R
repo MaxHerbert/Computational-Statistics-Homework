@@ -59,3 +59,19 @@ df_master <- rbind(df_master, test)
 # calculate average rent payment based on region and area
 avg_rent <- df_master %>% group_by(region, area) %>%
   summarize(mean_rent = round(mean(rent, na.rm = TRUE)))
+
+# logical indexing for avg_rent
+# avg_rent$mean_rent[which(avg_rent$region == "Central" & avg_rent$area == "urban")] 
+
+test <- test %>% mutate(rent = if_else(region == "Central" & area == "urban" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Central" & avg_rent$area == "urban")],
+                                            if_else(region == "Central" & area == "rural" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Central" & avg_rent$area == "rural")],
+                                                    if_else(region == "Chorotega" & area == "urban" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Chorotega" & avg_rent$area == "urban")],
+                                                            if_else(region == "Chorotega" & area == "rural" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Chorotega" & avg_rent$area == "rural")],
+                                                                    if_else(region == "Pacifico central" & area == "urban" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Pacifico central" & avg_rent$area == "urban")],
+                                                                            if_else(region == "Pacifico central" & area == "rural" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Pacifico central" & avg_rent$area == "rural")],
+                                                                                    if_else(region == "Brunca" & area == "urban" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Brunca" & avg_rent$area == "urban")],
+                                                                                            if_else(region == "Brunca" & area == "rural" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Brunca" & avg_rent$area == "rural")],
+                                                                                                    if_else(region == "Huetar Atlantica" & area == "urban" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Huetar Atlantica" & avg_rent$area == "urban")],
+                                                                                                            if_else(region == "Huetar Atlantica" & area == "rural" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Huetar Atlantica" & avg_rent$area == "rural")],
+                                                                                                                    if_else(region == "Huetar Norte" & area == "urban" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Huetar Norte" & avg_rent$area == "urban")],
+                                                                                                                            if_else(region == "Huetar Norte" & area == "rural" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Huetar Norte" & avg_rent$area == "rural")], rent)))))))))))))
