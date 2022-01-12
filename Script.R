@@ -93,6 +93,12 @@ train <- train %>% mutate(rent = if_else(region == "Central" & area == "urban" &
 
 # create RF
 
-train_final <- train %>% select(-c(Id, hh_id, area, region))
+set.seed(234) # initiate random seed so outcomes are reproducible
 
-rf <- randomForest(x = train_final, y = train$target, do.trace = TRUE, ntree = 100) # error message
+train_final <- train %>% select(-c(Id, hh_id, area, region)) # use when imputing rent missings
+
+# train_final <- train %>% select(-c(Id, hh_id)) %>% drop_na(rent) # use when not imputing rent missings
+
+train_final <- droplevels(train_final)
+
+rf <- randomForest(formula = target ~ ., data = train_final, do.trace = TRUE)
