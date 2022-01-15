@@ -19,17 +19,7 @@ codebook <- read_excel("data/codebook.xlsx",
 colnames(test)[colnames(test) == codebook$`Variable name`] <- codebook$`English Variable Name`
 colnames(train)[colnames(train) == codebook$`Variable name`] <- codebook$`English Variable Name`
 
-
-# find columns with missing values
-na_test <- colSums(is.na(test))
-na_train <- colSums(is.na(train))
-
-na_test_perc <- na_test[na_test > 0] / nrow(test) * 100
-na_train_perc <- na_train[na_train > 0] / nrow(train) * 100
-
-# remove columns with too many missings and drop any observations for which meaneduc is missing
-test <- test %>% select(-c(no_tablets, school_yrs_behind)) %>% drop_na(meaneduc)
-train <- train %>% select(-c(no_tablets, school_yrs_behind)) %>% drop_na(meaneduc)
+###################### impute missings in rent with region averages #############################################################
 
 # create new columns including regions and areas
 test <- test %>% mutate(region = if_else(region1 == 1, "Central", 
@@ -89,6 +79,8 @@ train <- train %>% mutate(rent = if_else(region == "Central" & area == "urban" &
                                                                                                                        if_else(region == "Huetar Norte" & area == "rural" & is.na(rent), avg_rent$mean_rent[which(avg_rent$region == "Huetar Norte" & avg_rent$area == "rural")], rent)))))))))))))
 
 
+###############################################################################################################################
+
 # create RF
 
 set.seed(234) # initiate random seed so outcomes are reproducible
@@ -97,6 +89,17 @@ test <- test %>% select(-c(tamhog, school_yrs_sqr, age_sqr, Age_sqr, hh_total_sq
 train <- train %>% select(-c(tamhog, school_yrs_sqr, age_sqr, Age_sqr, hh_total_sqr, ed_head_m_sqr, hh_children_sqr, overcrowding_sqr, dependency_sqr, meaneduc_sqr))
 
 ####################### NA handling start
+
+# find columns with missing values
+na_test <- colSums(is.na(test))
+na_train <- colSums(is.na(train))
+
+na_test_perc <- na_test[na_test > 0] / nrow(test) * 100
+na_train_perc <- na_train[na_train > 0] / nrow(train) * 100
+
+# remove columns with too many missings and drop any observations for which meaneduc is missing
+test <- test %>% select(-c(no_tablets, school_yrs_behind)) %>% drop_na(meaneduc)
+train <- train %>% select(-c(no_tablets, school_yrs_behind)) %>% drop_na(meaneduc)
 
 train_final <- train %>% select(-c(Id, hh_id, area, region)) # use when imputing rent missings
 
