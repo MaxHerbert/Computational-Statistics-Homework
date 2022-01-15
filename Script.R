@@ -84,8 +84,6 @@ train <- train %>% mutate(rent = if_else(region == "Central" & area == "urban" &
 
 # create RF
 
-set.seed(234) # initiate random seed so outcomes are reproducible
-
 
 ####################### NA handling start
 
@@ -112,16 +110,24 @@ train_final_imp <- rfImpute(target ~ ., data = train_final) # impute NAs in rent
 
 ####################### NA handling end
 
+set.seed(234) # initiate random seed so outcomes are reproducible
+
+# split dataset
+
+ind <- sample(2, nrow(train_final), replace = TRUE, prob = c(0.8, 0.2))
+training <- train_final[ind == 1,]
+validation <- train_final[ind == 2,]
+
+optimal_mtry <- tuneRF(training[,-139], training$target, improve = 0.05, ntreeTry = 200, doBest = TRUE)
+
+
 # random forest with all vars
-rf <- randomForest(formula = target ~ ., data = train_final, do.trace = TRUE)
+rf <- randomForest(formula = target ~ ., data = training, do.trace = TRUE, ntree = 500, mtry = optimal_mtry[["mtry"]])
 
 varImpPlot(rf, main = "Variable Importance")
 
-# random forest with 4 most important vars
-rf_topfour <- randomForest(formula = target ~ rent + meaneduc_sqr + meaneduc + dependency_sqr, data = train_final, do.trace = TRUE)
-
 # create confusion matrix and statistics
 
-pred <- train %>% mutate(predictions = predict(rf, train))
-confusionMatrix(pred$predictions, pred$target)
+val <- validation %>% mutate(predictions = predict(rf, validation))
+confusionMatrix(val$predictions, val$target)
 
