@@ -19,8 +19,6 @@ codebook <- read_excel("data/codebook.xlsx",
 colnames(test)[colnames(test) == codebook$`Variable name`] <- codebook$`English Variable Name`
 colnames(train)[colnames(train) == codebook$`Variable name`] <- codebook$`English Variable Name`
 
-test <- test %>% select(-c(tamhog, school_yrs_sqr, age_sqr, Age_sqr, hh_total_sqr, ed_head_m_sqr, hh_children_sqr, overcrowding_sqr, dependency_sqr, meaneduc_sqr))
-train <- train %>% select(-c(tamhog, school_yrs_sqr, age_sqr, Age_sqr, hh_total_sqr, ed_head_m_sqr, hh_children_sqr, overcrowding_sqr, dependency_sqr, meaneduc_sqr))
 
 # find columns with missing values
 na_test <- colSums(is.na(test))
@@ -95,10 +93,21 @@ train <- train %>% mutate(rent = if_else(region == "Central" & area == "urban" &
 
 set.seed(234) # initiate random seed so outcomes are reproducible
 
+test <- test %>% select(-c(tamhog, school_yrs_sqr, age_sqr, Age_sqr, hh_total_sqr, ed_head_m_sqr, hh_children_sqr, overcrowding_sqr, dependency_sqr, meaneduc_sqr))
+train <- train %>% select(-c(tamhog, school_yrs_sqr, age_sqr, Age_sqr, hh_total_sqr, ed_head_m_sqr, hh_children_sqr, overcrowding_sqr, dependency_sqr, meaneduc_sqr))
+
+####################### NA handling start
+
 train_final <- train %>% select(-c(Id, hh_id, area, region)) # use when imputing rent missings
 
-# train_final <- train %>% select(-c(Id, hh_id)) %>% drop_na(rent) # use when not imputing rent missings
+train_final <- train %>% select(-c(Id, hh_id)) %>% drop_na(rent) # use when not imputing rent missings and drop NAs from rent
+
+train_final <- train %>% select(-c(dependency, ed_head_f, ed_head_m, Id, hh_id)) # use when not dropping NAs from rent and using the rfImpute() function for imputing missings
 
 train_final <- droplevels(train_final)
 
-rf <- randomForest(formula = target ~ ., data = train_final, do.trace = TRUE)
+train_final_imp <- rfImpute(target ~ ., data = train_final) # impute NAs in rent with rfImpute function from randomForest package
+
+####################### NA handling end
+
+rf <- randomForest(formula = target ~ ., data = train_final_imp, do.trace = TRUE)
