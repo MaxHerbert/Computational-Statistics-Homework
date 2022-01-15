@@ -34,11 +34,23 @@ na_train_perc <- na_train[na_train > 0] / nrow(train) * 100
 test <- test %>% select(-c(no_tablets, school_yrs_behind)) %>% drop_na(meaneduc)
 train <- train %>% select(-c(no_tablets, school_yrs_behind)) %>% drop_na(meaneduc)
 
+# clean columns with character values
+train <- train %>% mutate(dependency = sqrt(dependency_sqr), ed_head_m = sqrt(ed_head_m_sqr), ed_head_f = as.numeric(if_else(ed_head_f == "yes", "1",
+                                                                                                                  if_else(ed_head_f == "no", "0", ed_head_f)))) 
+
+test <- test %>% mutate(dependency = sqrt(dependency_sqr), ed_head_m = sqrt(ed_head_m_sqr), ed_head_f = as.numeric(if_else(ed_head_f == "yes", "1",
+                                                                                                                             if_else(ed_head_f == "no", "0", ed_head_f)))) 
+
+
 train_final <- train %>% select(-c(Id, hh_id)) %>% drop_na(rent) # use when not imputing rent missings and drop NAs from rent
 
 train_final <- droplevels(train_final)
 
 ####################### NA handling end
+
+
+
+
 
 set.seed(234) # initiate random seed so outcomes are reproducible
 
@@ -69,3 +81,8 @@ rpart.plot(cart)
 
 val_cart <- validation %>% mutate(predictions = predict(cart, validation, type = "class"))
 confusionMatrix(val_cart$predictions, val_cart$target)
+
+
+# predict test set
+
+test_predict <- test %>% mutate(prediction = predict(rf, test))
