@@ -50,8 +50,6 @@ train_final <- droplevels(train_final)
 
 
 
-
-
 set.seed(234) # initiate random seed so outcomes are reproducible
 
 # split dataset
