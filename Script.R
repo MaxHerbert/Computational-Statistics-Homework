@@ -2,6 +2,7 @@
 library(tidyverse)
 library(readxl)
 library(randomForest)
+library(caret)
 
 # set working directory relative to path of the script file
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
@@ -85,8 +86,6 @@ train <- train %>% mutate(rent = if_else(region == "Central" & area == "urban" &
 
 set.seed(234) # initiate random seed so outcomes are reproducible
 
-test <- test %>% select(-c(tamhog, school_yrs_sqr, age_sqr, Age_sqr, hh_total_sqr, ed_head_m_sqr, hh_children_sqr, overcrowding_sqr, dependency_sqr, meaneduc_sqr))
-train <- train %>% select(-c(tamhog, school_yrs_sqr, age_sqr, Age_sqr, hh_total_sqr, ed_head_m_sqr, hh_children_sqr, overcrowding_sqr, dependency_sqr, meaneduc_sqr))
 
 ####################### NA handling start
 
@@ -113,4 +112,16 @@ train_final_imp <- rfImpute(target ~ ., data = train_final) # impute NAs in rent
 
 ####################### NA handling end
 
-rf <- randomForest(formula = target ~ ., data = train_final_imp, do.trace = TRUE)
+# random forest with all vars
+rf <- randomForest(formula = target ~ ., data = train_final, do.trace = TRUE)
+
+varImpPlot(rf, main = "Variable Importance")
+
+# random forest with 4 most important vars
+rf_topfour <- randomForest(formula = target ~ rent + meaneduc_sqr + meaneduc + dependency_sqr, data = train_final, do.trace = TRUE)
+
+# create confusion matrix and statistics
+
+pred <- train %>% mutate(predictions = predict(rf, train))
+confusionMatrix(pred$predictions, pred$target)
+
