@@ -2,6 +2,7 @@
 library(tidyverse)
 library(readxl)
 library(randomForest)
+library(rpart)
 library(caret)
 
 # set working directory relative to path of the script file
@@ -60,3 +61,11 @@ varImpPlot(rf, main = "Variable Importance")
 val <- validation %>% mutate(predictions = predict(rf, validation))
 confusionMatrix(val$predictions, val$target)
 
+# CART model
+
+cart <- rpart(target ~ ., data = training, method = "class")
+
+rpart.plot(cart)
+
+val_cart <- validation %>% mutate(predictions = predict(cart, validation, type = "class"))
+confusionMatrix(val_cart$predictions, val_cart$target)
