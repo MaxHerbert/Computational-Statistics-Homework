@@ -86,3 +86,4 @@ confusionMatrix(val_cart$predictions, val_cart$target)
 # predict test set
 
 test_predict <- test %>% mutate(prediction = predict(rf, test))
+table(test_predict$prediction)
