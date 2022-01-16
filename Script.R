@@ -4,6 +4,7 @@ library(readxl)
 library(randomForest)
 library(rpart)
 library(caret)
+library(rpart.plot)
 
 # set working directory relative to path of the script file
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
@@ -42,23 +43,24 @@ test <- test %>% mutate(dependency = sqrt(dependency_sqr), ed_head_m = sqrt(ed_h
                                                                                                                              if_else(ed_head_f == "no", "0", ed_head_f)))) 
 
 
-train_final <- train %>% select(-c(Id, hh_id)) %>% drop_na(rent) # use when not imputing rent missings and drop NAs from rent
+train_final <- train %>% select(-c(Id, hh_id))
 
 train_final <- droplevels(train_final)
 
 ####################### NA handling end
 
-
+train_final_imp <- rfImpute(target ~ ., data = train_final) # impute NAs in rent with rfImpute function from randomForest package
 
 set.seed(234) # initiate random seed so outcomes are reproducible
 
 # split dataset
 
-ind <- sample(2, nrow(train_final), replace = TRUE, prob = c(0.8, 0.2))
-training <- train_final[ind == 1,]
-validation <- train_final[ind == 2,]
+ind <- sample(2, nrow(train_final_imp), replace = TRUE, prob = c(0.8, 0.2))
+training <- train_final_imp[ind == 1,]
+validation <- train_final_imp[ind == 2,]
 
-optimal_mtry <- tuneRF(training[,-139], training$target, improve = 0.05, ntreeTry = 200, doBest = TRUE)
+training_mtry <- training %>% select(-target)
+optimal_mtry <- tuneRF(training_mtry, training$target, improve = 0.05, ntreeTry = 200, doBest = TRUE)
 
 
 # random forest with all vars
