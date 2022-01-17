@@ -47,9 +47,9 @@ train_final <- train %>% select(-c(Id, hh_id))
 
 train_final <- droplevels(train_final)
 
-####################### NA handling end
-
 train_final_imp <- rfImpute(target ~ ., data = train_final) # impute NAs in rent with rfImpute function from randomForest package
+
+####################### NA handling end
 
 set.seed(234) # initiate random seed so outcomes are reproducible
 
@@ -59,16 +59,18 @@ ind <- sample(2, nrow(train_final_imp), replace = TRUE, prob = c(0.8, 0.2))
 training <- train_final_imp[ind == 1,]
 validation <- train_final_imp[ind == 2,]
 
+# compute optimal amount of variables in each tree
 training_mtry <- training %>% select(-target)
 optimal_mtry <- tuneRF(training_mtry, training$target, improve = 0.05, ntreeTry = 200, doBest = TRUE)
 
 
-# random forest with all vars
+# train random forest model
 rf <- randomForest(formula = target ~ ., data = training, do.trace = TRUE, ntree = 500, mtry = optimal_mtry[["mtry"]])
 
-varImpPlot(rf, main = "Variable Importance")
+varImpPlot(rf, main = "Variable Importance") # plot variable importance
 
-# create confusion matrix and statistics
+
+# create confusion matrix and performance statistics
 
 val <- validation %>% mutate(predictions = predict(rf, validation))
 confusionMatrix(val$predictions, val$target)
