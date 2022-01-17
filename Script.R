@@ -83,7 +83,8 @@ val_cart <- validation %>% mutate(predictions = predict(cart, validation, type =
 confusionMatrix(val_cart$predictions, val_cart$target)
 
 
-# predict test set
+# predict test set and output frequency of predictions
 
 test_predict <- test %>% mutate(prediction = predict(rf, test))
-table(test_predict$prediction)
+pred_freq <- table(test_predict$prediction)
+pred_freq
