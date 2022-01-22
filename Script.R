@@ -22,7 +22,9 @@ codebook <- read_excel("data/codebook.xlsx",
 colnames(test)[colnames(test) == codebook$`Variable name`] <- codebook$`English Variable Name`
 colnames(train)[colnames(train) == codebook$`Variable name`] <- codebook$`English Variable Name`
 
-####################### NA handling start
+set.seed(234) # initiate random seed so outcomes are reproducible
+
+####################### NA handling start ########################
 
 # find columns with missing values
 na_test <- colSums(is.na(test))
@@ -49,9 +51,7 @@ train_final <- droplevels(train_final)
 
 train_final_imp <- rfImpute(target ~ ., data = train_final) # impute NAs in rent with rfImpute function from randomForest package
 
-####################### NA handling end
-
-set.seed(234) # initiate random seed so outcomes are reproducible
+####################### NA handling end ########################
 
 # split dataset
 
