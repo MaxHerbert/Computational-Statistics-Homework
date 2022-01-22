@@ -53,8 +53,8 @@ train_final_imp <- rfImpute(target ~ ., data = train_final) # impute NAs in rent
 
 ####################### NA handling end ########################
 
-# split dataset
 
+# split dataset
 ind <- sample(2, nrow(train_final_imp), replace = TRUE, prob = c(0.8, 0.2))
 training <- train_final_imp[ind == 1,]
 validation <- train_final_imp[ind == 2,]
@@ -69,11 +69,10 @@ rf <- randomForest(formula = target ~ ., data = training, do.trace = TRUE, ntree
 
 varImpPlot(rf, main = "Variable Importance") # plot variable importance
 
-
 # create confusion matrix and performance statistics
-
 val <- validation %>% mutate(predictions = predict(rf, validation))
 confusionMatrix(val$predictions, val$target)
+
 
 # CART model
 
@@ -86,7 +85,6 @@ confusionMatrix(val_cart$predictions, val_cart$target)
 
 
 # predict test set and output frequency of predictions
-
 test_predict <- test %>% mutate(prediction = predict(rf, test))
 pred_freq <- table(test_predict$prediction)
 pred_freq
